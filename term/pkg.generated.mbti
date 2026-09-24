@@ -1,0 +1,133 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "username/moonterm/term"
+
+import {
+  "username/moonterm/vt",
+}
+
+// Values
+pub const COLOR_DEFAULT : Int = -1
+
+pub const COLOR_RGB : Int = 0x01000000
+
+pub const COLOR_RGB_MASK : Int = 0x00FFFFFF
+
+pub const FLAG_BLINK : Int = 0x010
+
+pub const FLAG_BOLD : Int = 0x001
+
+pub const FLAG_DIM : Int = 0x002
+
+pub const FLAG_HIDDEN : Int = 0x040
+
+pub const FLAG_ITALIC : Int = 0x004
+
+pub const FLAG_REVERSE : Int = 0x020
+
+pub const FLAG_SGR_MASK : Int = 0x0FF
+
+pub const FLAG_STRIKE : Int = 0x080
+
+pub const FLAG_UNDERLINE : Int = 0x008
+
+pub const FLAG_WIDE : Int = 0x100
+
+pub const FLAG_WIDE_TAIL : Int = 0x200
+
+pub fn char_width(Char) -> Int
+
+pub fn color_blue(Int) -> Int
+
+pub fn color_green(Int) -> Int
+
+pub fn color_index_of(Int) -> Int
+
+pub fn color_indexed(Int) -> Int
+
+pub fn color_is_rgb(Int) -> Bool
+
+pub fn color_red(Int) -> Int
+
+pub fn color_rgb(Int, Int, Int) -> Int
+
+pub fn is_wide_lead(Int) -> Bool
+
+pub fn is_wide_tail(Int) -> Bool
+
+// Errors
+
+// Types and methods
+pub struct Cell {
+  mut ch : Char
+  mut fg : Int
+  mut bg : Int
+  mut flags : Int
+}
+pub fn Cell::copy_from(Self, Self) -> Unit
+pub fn Cell::erase(Self) -> Unit
+pub fn Cell::is_blank(Self) -> Bool
+pub fn Cell::new() -> Self
+pub fn Cell::set(Self, Char, Int, Int, Int) -> Unit
+
+pub struct Grid {
+  mut rows : Array[Array[Cell]]
+  mut cols : Int
+  mut height : Int
+}
+pub fn Grid::cell(Self, Int, Int) -> Cell
+pub fn Grid::clear_range(Self, Int, Int, Int, Int) -> Unit
+pub fn Grid::clear_row(Self, Int, Int) -> Unit
+pub fn Grid::delete_lines(Self, Int, Int, Int, Int) -> Unit
+pub fn Grid::insert_lines(Self, Int, Int, Int, Int) -> Unit
+pub fn Grid::new(Int, Int) -> Self
+pub fn Grid::resize(Self, Int, Int) -> Unit
+pub fn Grid::row(Self, Int) -> Array[Cell]
+pub fn Grid::row_text(Self, Int) -> String
+pub fn Grid::scroll_down(Self, Int, Int, Int, Int) -> Unit
+pub fn Grid::scroll_up(Self, Int, Int, Int, Int) -> Unit
+
+pub struct Saved {
+  x : Int
+  y : Int
+  fg : Int
+  bg : Int
+  flags : Int
+}
+
+pub struct Terminal {
+  cols : Int
+  rows : Int
+  main : Grid
+  alt : Grid
+  mut on_alt : Bool
+  mut x : Int
+  mut y : Int
+  mut pen_fg : Int
+  mut pen_bg : Int
+  mut pen_flags : Int
+  mut scroll_top : Int
+  mut scroll_bottom : Int
+  mut wrap_pending : Bool
+  mut autowrap : Bool
+  mut origin_mode : Bool
+  mut cursor_visible : Bool
+  mut saved : Saved
+  mut has_saved : Bool
+  mut title : String
+  parser : @vt.Parser
+}
+pub fn Terminal::cursor(Self) -> (Int, Int)
+pub fn Terminal::cursor_is_visible(Self) -> Bool
+pub fn Terminal::feed(Self, Bytes) -> Unit
+pub fn Terminal::finish(Self) -> Unit
+pub fn Terminal::is_on_alt(Self) -> Bool
+pub fn Terminal::new(Int, Int) -> Self
+pub fn Terminal::put_char(Self, Char) -> Unit
+pub fn Terminal::reset(Self) -> Unit
+pub fn Terminal::row_text(Self, Int) -> String
+pub fn Terminal::screen_text(Self) -> String
+pub fn Terminal::title_text(Self) -> String
+
+// Type aliases
+
+// Traits
