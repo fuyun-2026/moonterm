@@ -1,0 +1,7 @@
+import {
+  "moonbitlang/core/encoding/utf8",
+  "fuyun-2026/moonterm/render",
+  "fuyun-2026/moonterm/term",
+}
+
+pkgtype(kind: "executable")
