@@ -1,0 +1,30 @@
+import {
+  "moonbitlang/core/encoding/utf8",
+  "fuyun-2026/moonterm/render",
+  "fuyun-2026/moonterm/term",
+}
+
+pkgtype(kind: "executable")
+
+options(
+  link: {
+    "js": {
+      "exports": [
+        "term_new",
+        "term_feed_text",
+        "term_finish",
+        "term_reset",
+        "term_screen_html",
+        "term_screen_text",
+        "term_scrollback_text",
+        "term_scrollback_len",
+        "term_title",
+        "term_cursor",
+        "term_is_alt",
+        "term_size",
+        "term_ansi",
+      ],
+      "format": "esm",
+    },
+  },
+)
