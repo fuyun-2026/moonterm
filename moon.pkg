@@ -1,0 +1,7 @@
+// The root package re-exports the entry point and hosts the module README.
+//
+// Keeping the import below is what lets `README.mbt.md`'s `mbt check` block
+// compile, so `moon test` verifies the documented usage against the real API.
+import {
+  "fuyun-2026/moonterm/term",
+}

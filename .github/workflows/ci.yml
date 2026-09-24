@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  # Keeps the toolchain step identical across jobs so a version bump is a
+  # one-line change.
+  MOONBIT_INSTALL: curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+
+jobs:
+  # Type check, format check, and the whole test suite — including the
+  # differential conformance cases, which run offline because the reference
+  # screens are committed.
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: Report versions
+        run: moon version --all
+
+      - name: Type check
+        run: moon check
+
+      - name: Test
+        run: moon test
+
+      - name: Check formatting
+        run: |
+          moon fmt
+          if ! git diff --exit-code; then
+            echo "::error::Formatting is out of date. Run 'moon fmt' and commit the result."
+            exit 1
+          fi
+
+  # The browser build is generated JavaScript, so a broken binding would show up
+  # to a reader as a blank page rather than as a failing build. This job loads
+  # the same module the demo page loads and exercises the whole exported surface.
+  web:
+    name: Web build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: Build for JavaScript
+        run: moon build --target js ./web
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check the JavaScript binding
+        run: node tools/check-web.mjs
+
+      - name: Check README.md is in sync
+        run: node tools/sync-readme.mjs --check
+
+  # The conformance corpus is generated from xterm.js and committed. This job
+  # regenerates it and fails if the result differs, which is what stops the
+  # committed expectations from being edited by hand to match a bug.
+  corpus:
+    name: Conformance corpus
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # `npm ci` rather than `npm install`: the lockfile pins the exact
+      # xterm.js version the committed corpus was generated from, so a new
+      # release cannot silently change the reference screens.
+      - name: Install oracle dependencies
+        working-directory: tools
+        run: npm ci --no-audit --no-fund
+
+      - name: Regenerate the corpus
+        run: node tools/oracle.mjs
+
+      - name: Fail if the committed corpus has drifted
+        run: |
+          if ! git diff --exit-code -- term/corpus_generated_wbtest.mbt; then
+            echo "::error::The committed conformance corpus does not match xterm.js. Do not edit term/corpus_generated_wbtest.mbt by hand; run 'node tools/oracle.mjs' and commit the result."
+            exit 1
+          fi
