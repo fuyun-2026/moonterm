@@ -1,0 +1,66 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "username/moonterm/vt"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Parser {
+  mut state : State
+  decoder : Utf8Decoder
+  params : Array[Int]
+  mut num_params : Int
+  mut current_param : Int
+  mut param_started : Bool
+  intermediates : Array[Byte]
+  mut num_intermediates : Int
+  mut private_marker : Byte
+  osc_buf : Array[Byte]
+  mut num_osc : Int
+}
+pub fn[H : Handler] Parser::feed(Self, H, Bytes) -> Unit
+pub fn[H : Handler] Parser::finish(Self, H) -> Unit
+pub fn Parser::new() -> Self
+
+pub enum State {
+  Ground
+  Escape
+  EscapeIntermediate
+  CsiEntry
+  CsiParam
+  CsiIntermediate
+  CsiIgnore
+  DcsEntry
+  DcsParam
+  DcsIntermediate
+  DcsPassthrough
+  DcsIgnore
+  OscString
+  SosPmApcString
+}
+
+pub struct Utf8Decoder {
+  mut codepoint : Int
+  mut remaining : Int
+  mut min_codepoint : Int
+  mut out0 : Char
+  mut out1 : Char
+  mut pending : Int
+}
+pub fn Utf8Decoder::feed(Self, Byte) -> Unit
+pub fn Utf8Decoder::finish(Self) -> Unit
+pub fn Utf8Decoder::is_pending(Self) -> Bool
+pub fn Utf8Decoder::new() -> Self
+pub fn Utf8Decoder::next(Self) -> Char?
+
+// Type aliases
+
+// Traits
+pub(open) trait Handler {
+  fn print(Self, Char) -> Unit
+  fn execute(Self, Byte) -> Unit
+  fn csi_dispatch(Self, Byte, ArrayView[Int], ArrayView[Byte], Byte) -> Unit
+  fn esc_dispatch(Self, ArrayView[Byte], Byte) -> Unit
+  fn osc_dispatch(Self, ArrayView[Byte]) -> Unit
+}
