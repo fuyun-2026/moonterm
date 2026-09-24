@@ -1,0 +1,14 @@
+# MoonBit build output
+_build/
+target/
+target
+
+# MoonBit dependency and agent caches
+.mooncakes/
+.moonagent/
+
+# Node dependencies for the test oracle and the README sync check
+node_modules/
+
+# Editor and OS noise
+.DS_Store

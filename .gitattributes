@@ -1,0 +1,11 @@
+# Normalise line endings to LF in the repository.
+#
+# The CI corpus job regenerates term/corpus_generated_wbtest.mbt on Linux and
+# fails if the committed copy differs. Without this, a checkout on Windows would
+# rewrite the file with CRLF and the comparison would fail for a reason that has
+# nothing to do with the emulator.
+* text=auto eol=lf
+
+# Keep these binary so Git never tries to normalise or diff them.
+*.png binary
+*.wasm binary
